@@ -27,8 +27,6 @@ def input_mouse():
             end_x = mouse_x
             end_y = mouse_y
 
-
-
 game = True
 
 mouse_x, mouse_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
@@ -43,28 +41,58 @@ character_x, character_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
 start_x, start_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
 end_x, end_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
 
+
+
 while game:
     clear_canvas()
 
     kpu.draw(KPU_WIDTH / 2, KPU_HEIGHT / 2)
     hand_arrow.draw(mouse_x, mouse_y)
 
-    if moving == False:
-        if face == 1:
-            aniType = 3
-        elif face == -1:
-            aniType = 2
+    if character_x != end_x or character_y != end_y:
+        moving = True
+        if start_x - end_x < 0:
+            face = 1
+        else:
+            face = -1
+
+        if moving == False:
+            if face == 1:
+                aniType = 3
+            elif face == -1:
+                aniType = 2
+        else:
+            if face == 1:
+                aniType = 1
+            elif face == -1:
+                aniType = 0
+
+        for i in range(0, 100 + 1, 5):
+            t = i / 100
+            character_x = (1 - t) * start_x + t * end_x
+            character_y = (1 - t) * start_y + t * end_y
+            clear_canvas()
+            kpu.draw(KPU_WIDTH / 2, KPU_HEIGHT / 2)
+            hand_arrow.draw(mouse_x, mouse_y)
+            character.clip_draw(frame * 100, 100 * aniType, 100, 100, character_x, character_y)
+            frame = (frame + 1) % 8
+            update_canvas()
+            delay(0.05)
+
     else:
-        if face == 1:
-            aniType = 1
-        elif face == -1:
-            aniType = 0
+        if moving == False:
+            if face == 1:
+                aniType = 3
+            elif face == -1:
+                aniType = 2
+        else:
+            if face == 1:
+                 aniType = 1
+            elif face == -1:
+                aniType = 0
 
-    character_x = end_x
-    character_y = end_y
-
-    character.clip_draw(frame * 100, 100 * aniType, 100, 100, character_x, character_y)
-    frame = (frame + 1) % 8
+        character.clip_draw(frame * 100, 100 * aniType, 100, 100, character_x, character_y)
+        frame = (frame + 1) % 8
 
     input_mouse()
 
