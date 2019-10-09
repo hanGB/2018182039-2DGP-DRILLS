@@ -77,7 +77,8 @@ while game:
             character.clip_draw(frame * 100, 100 * aniType, 100, 100, character_x, character_y)
             frame = (frame + 1) % 8
             update_canvas()
-            delay(0.05)
+            delay(0.03)
+        moving = False
 
     else:
         if moving == False:
