@@ -11,7 +11,9 @@ character = load_image("animation_sheet.png")
 def input_mouse():
     global game
     global mouse_x, mouse_y
-
+    global start_x, start_y
+    global end_x, end_y
+    global character_x, character_y
     events = get_events()
 
     for event in events:
@@ -19,6 +21,13 @@ def input_mouse():
             game = False
         elif event.type == SDL_MOUSEMOTION:
             mouse_x, mouse_y = event.x + 25, KPU_HEIGHT- 1 - event.y - 26
+        elif event.type == SDL_MOUSEBUTTONDOWN:
+            start_x = character_x
+            start_y = character_y
+            end_x = mouse_x
+            end_y = mouse_y
+
+
 
 game = True
 
@@ -31,7 +40,8 @@ aniType = 0
 frame = 0
 moving = False
 character_x, character_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
-point = [(character_x, character_y), (character_x, character_y)]
+start_x, start_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
+end_x, end_y = KPU_WIDTH / 2, KPU_HEIGHT / 2
 
 while game:
     clear_canvas()
@@ -49,6 +59,9 @@ while game:
             aniType = 1
         elif face == -1:
             aniType = 0
+
+    character_x = end_x
+    character_y = end_y
 
     character.clip_draw(frame * 100, 100 * aniType, 100, 100, character_x, character_y)
     frame = (frame + 1) % 8
