@@ -27,13 +27,13 @@ pointy = [random.randint(0, KPU_HEIGHT) for n in range(10)]
 
 while game:
     for n in range(0, 10):
-        for i in range(0, 100, 2):
+        for i in range(0, 100, 1):
             clear_canvas()
             kpu.draw(KPU_WIDTH / 2, KPU_HEIGHT / 2)
             t = i / 100
             character_x = ((-t ** 3 + 2 * t ** 2 - t) * pointx[n % 10] + (3 * t ** 3 - 5 * t ** 2 + 2) * pointx[(n + 1) % 10] + (-3 * t ** 3 + 4 * t ** 2 + t) * pointx[(n + 2) % 10] + (t ** 3 - t ** 2) * pointx[(n + 3) % 10]) / 2
             character_y = ((-t ** 3 + 2 * t ** 2 - t) * pointy[n % 10] + (3 * t ** 3 - 5 * t ** 2 + 2) * pointy[(n + 1) % 10] + (-3 * t ** 3 + 4 * t ** 2 + t) * pointy[(n + 2) % 10] + (t ** 3 - t ** 2) * pointy[(n + 3) % 10]) / 2
-            if pointx[n % 9] - pointx[n + 1 % 9] < 0:
+            if pointx[n % 10] - pointx[(n + 1) % 10] < 0:
                 face = 0
             else:
                 face = 1
@@ -44,7 +44,5 @@ while game:
             cancle()
             if game == False:
                 break
-                
-            delay(0.05)
 
-
+            # delay(0.01)
