@@ -33,10 +33,11 @@ while game:
             t = i / 100
             character_x = ((-t ** 3 + 2 * t ** 2 - t) * pointx[n % 10] + (3 * t ** 3 - 5 * t ** 2 + 2) * pointx[(n + 1) % 10] + (-3 * t ** 3 + 4 * t ** 2 + t) * pointx[(n + 2) % 10] + (t ** 3 - t ** 2) * pointx[(n + 3) % 10]) / 2
             character_y = ((-t ** 3 + 2 * t ** 2 - t) * pointy[n % 10] + (3 * t ** 3 - 5 * t ** 2 + 2) * pointy[(n + 1) % 10] + (-3 * t ** 3 + 4 * t ** 2 + t) * pointy[(n + 2) % 10] + (t ** 3 - t ** 2) * pointy[(n + 3) % 10]) / 2
-            if pointx[n % 10] - pointx[(n + 1) % 10] < 0:
-                face = 0
-            else:
+            if pointx[(n + 1) % 10] - pointx[(n + 2) % 10] < 0:
                 face = 1
+            else:
+                face = 0
+
             character.clip_draw(frame * 100, 100 * face, 100, 100, character_x, character_y)
             frame = (frame + 1) % 8
             update_canvas()
@@ -45,4 +46,4 @@ while game:
             if game == False:
                 break
 
-            # delay(0.01)
+            delay(0.01)
