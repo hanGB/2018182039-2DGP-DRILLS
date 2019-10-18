@@ -7,10 +7,10 @@ from pico2d import *
 import game_framework
 import main_state
 
-
 name = "Pause_state"
 
 pause = None
+grass = None
 
 
 class Pause:
@@ -28,7 +28,13 @@ class Pause:
 
 def enter():
     global pause
+
+    global grass
+    global boy
+
     pause = Pause()
+    grass = main_state.Grass()
+    boy = main_state.Boy()
 
 
 def exit():
@@ -56,9 +62,9 @@ def handle_events():
 def update():
     pause.update()
 
-
 def draw():
     clear_canvas()
-
+    grass.draw()
+    main_state.boy.draw()
     pause.draw()
     update_canvas()
