@@ -2,13 +2,17 @@ from pico2d import *
 
 # Boy Event
 
-RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP = range(4)
+RIGHT_DOWN, LEFT_DOWN, RIGHT_UP, LEFT_UP, LSHIFT_DOWN, RSHIFT_DOWN, LSHIFT_UP, RSHIFT_UP, DASH_TIMER = range(9)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
     (SDL_KEYDOWN, SDLK_LEFT): LEFT_DOWN,
     (SDL_KEYUP, SDLK_RIGHT): RIGHT_UP,
-    (SDL_KEYUP, SDLK_LEFT): LEFT_UP
+    (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
+    (SDL_KEYDOWN, SDLK_LSHIFT): LSHIFT_DOWN,
+    (SDL_KEYDOWN, SDLK_RSHIFT): RSHIFT_DOWN,
+    (SDL_KEYUP, SDLK_LSHIFT): LSHIFT_UP,
+    (SDL_KEYUP, SDLK_RSHIFT): RSHIFT_UP
 }
 
 
@@ -77,11 +81,47 @@ class RunState:
             boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
 
 
+class DashState:
+    @staticmethod
+    def enter(boy, event):
+        boy.dir = boy.velocity
+        boy.timer = 150
+
+    @staticmethod
+    def exit(boy, event):
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + 1) % 8
+        boy.timer -= 1
+        if boy.timer == 0:
+            boy.add_event(DASH_TIMER)
+        boy.x += 2 * boy.velocity
+        boy.x = clamp(25, boy.x, 800 - 25)
+
+    @staticmethod
+    def draw(boy):
+        if boy.dir == 1:
+            boy.image.clip_draw(boy.frame * 100, 100, 100, 100, boy.x, boy.y)
+        else:
+            boy.image.clip_draw(boy.frame * 100, 0, 100, 100, boy.x, boy.y)
+
+
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState,
-                RIGHT_DOWN: RunState, LEFT_DOWN: RunState},
+                RIGHT_DOWN: RunState, LEFT_DOWN: RunState,
+                LSHIFT_DOWN: IdleState, RSHIFT_DOWN: IdleState,
+                LSHIFT_UP: IdleState, RSHIFT_UP: IdleState},
     RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-               LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState}
+               LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState,
+               LSHIFT_DOWN: DashState, RSHIFT_DOWN: DashState,
+               LSHIFT_UP: RunState, RSHIFT_UP: RunState},
+    DashState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
+                LEFT_DOWN: DashState, RIGHT_DOWN: DashState,
+                LSHIFT_DOWN: DashState, RSHIFT_DOWN: DashState,
+                LSHIFT_UP: RunState, RSHIFT_UP: RunState,
+                DASH_TIMER: RunState}
 }
 
 
