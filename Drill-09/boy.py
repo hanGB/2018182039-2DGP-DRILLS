@@ -136,7 +136,7 @@ class Boy:
         self.timer = 0
         self.event_que = []
         self.cur_state = IdleState
-        self.cur_state.enter(self, None)
+        self.cur_state.(self, None)
 
     def update_state(self):
         if len(self.event_que) > 0:
@@ -163,7 +163,7 @@ class Boy:
         pass
 
     def draw(self):
-        self.cur_state.draw(self)
+        self.cur_state.draw (self)
         pass
 
     def handle_event(self, event):
