@@ -92,12 +92,14 @@ def update():
     if collide(brick, boy):
         boy.set_is_on_brick(True)
         boy.land()
-    else:
+
+    if collide(brick, boy) is False:
         boy.fall()
         boy.set_is_on_brick(False)
 
     if collide(grass, boy):
         boy.land()
+
 
 def draw():
     clear_canvas()

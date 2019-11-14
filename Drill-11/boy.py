@@ -173,6 +173,7 @@ class Boy:
         self.jumpDir = 1
         self.locationBeforeJump = 0
         self.is_on_brick = False
+        self.is_falling = False
 
     def get_bb(self):
         # fill here
@@ -195,6 +196,8 @@ class Boy:
             self.cur_state.enter(self, event)
         if self.is_on_brick:
             self.x += main_state.brick.get_speed()
+        if self.is_falling:
+            self.y += JUMP_SPEED_PPS * game_framework.frame_time * self.jumpDir
 
     def draw(self):
         self.cur_state.draw(self)
@@ -210,9 +213,11 @@ class Boy:
     def land(self):
         self.jumping = False
         self.jumpDir = 1
+        self.is_falling = False
 
     def fall(self):
-        if self. jump == False:
+        if self.jumping == False:
+            print("fall")
             self.jumping = True
             self.jumpDir = -1
 
