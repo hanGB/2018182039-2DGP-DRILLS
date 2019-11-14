@@ -6,7 +6,7 @@ class Brick:
     image = None
 
     def __init__(self):
-        if Brick.image == None:
+        if Brick.image is None:
             Brick.image = load_image('brick180x40.png')
         self.x, self.y, self.fall_speed = 0, 180, 200
         self.dir = 1
@@ -26,4 +26,5 @@ class Brick:
 
         self.x += self.dir * self.fall_speed * game_framework.frame_time
 
-
+    def get_speed(self):
+        return self.dir * self.fall_speed * game_framework.frame_time

@@ -87,6 +87,7 @@ def update():
             ball.stop()
         if collide(brick, ball):
             ball.stop()
+            ball.set_is_on_brick(True)
 
 
 def draw():
