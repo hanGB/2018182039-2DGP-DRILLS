@@ -1,6 +1,7 @@
 import game_framework
 from pico2d import *
 from ball import Ball
+import main_state
 
 import game_world
 
@@ -11,11 +12,16 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
+JUMP_SPEED_KMPH = 30.0  # Km / Hour
+JUMP_SPEED_MPM = (JUMP_SPEED_KMPH * 1000.0 / 60.0)
+JUMP_SPEED_MPS = (JUMP_SPEED_MPM / 60.0)
+JUMP_SPEED_PPS = (JUMP_SPEED_MPS * PIXEL_PER_METER)
+
 # Boy Action Speed
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
-
+JUMPPOWER = 200
 
 
 # Boy Event
@@ -36,7 +42,11 @@ class IdleState:
 
     @staticmethod
     def enter(boy, event):
-        if event == RIGHT_DOWN:
+        if event == SPACE:
+            boy.jumping = True
+            boy.locationBeforeJump = boy.y
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time * boy.jumpDir
+        elif event == RIGHT_DOWN:
             boy.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
             boy.velocity -= RUN_SPEED_PPS
@@ -56,6 +66,11 @@ class IdleState:
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.timer -= 1
+        if boy.jumping:
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time * boy.jumpDir
+            if boy.y > (boy.locationBeforeJump + JUMPPOWER):
+                boy.jumpDir = -1
+
         if boy.timer == 0:
             boy.add_event(SLEEP_TIMER)
 
@@ -79,7 +94,12 @@ class RunState:
             boy.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
             boy.velocity += RUN_SPEED_PPS
+        elif event == SPACE:
+            boy.jumping = True
+            boy.locationBeforeJump = boy.y
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time * boy.jumpDir
         boy.dir = clamp(-1, boy.velocity, 1)
+
 
     @staticmethod
     def exit(boy, event):
@@ -92,6 +112,11 @@ class RunState:
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
         boy.x += boy.velocity * game_framework.frame_time
         boy.x = clamp(25, boy.x, 1600 - 25)
+
+        if boy.jumping:
+            boy.y += JUMP_SPEED_PPS * game_framework.frame_time * boy.jumpDir
+            if boy.y > (boy.locationBeforeJump + JUMPPOWER):
+                boy.jumpDir = -1
 
     @staticmethod
     def draw(boy):
@@ -123,19 +148,17 @@ class SleepState:
             boy.image.clip_composite_draw(int(boy.frame) * 100, 200, 100, 100, -3.141592 / 2, '', boy.x + 25, boy.y - 25, 100, 100)
 
 
-
-
-
-
 next_state_table = {
     IdleState: {RIGHT_UP: RunState, LEFT_UP: RunState, RIGHT_DOWN: RunState, LEFT_DOWN: RunState, SLEEP_TIMER: SleepState, SPACE: IdleState},
     RunState: {RIGHT_UP: IdleState, LEFT_UP: IdleState, LEFT_DOWN: IdleState, RIGHT_DOWN: IdleState, SPACE: RunState},
     SleepState: {LEFT_DOWN: RunState, RIGHT_DOWN: RunState, LEFT_UP: RunState, RIGHT_UP: RunState, SPACE: IdleState}
 }
 
+
 class Boy:
 
     def __init__(self):
+        self.jump = None
         self.x, self.y = 1600 // 2, 90
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('animation_sheet.png')
@@ -146,15 +169,19 @@ class Boy:
         self.event_que = []
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+        self.jumping = False
+        self.jumpDir = 1
+        self.locationBeforeJump = 0
+        self.is_on_brick = False
 
     def get_bb(self):
         # fill here
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - 30, self.y - 40, self.x + 30, self.y + 50
 
     def fire_ball(self):
-        ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
-        game_world.add_object(ball, 1)
-
+        pass
+       # ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
+       # game_world.add_object(ball, 1)
 
     def add_event(self, event):
         self.event_que.insert(0, event)
@@ -166,6 +193,8 @@ class Boy:
             self.cur_state.exit(self, event)
             self.cur_state = next_state_table[self.cur_state][event]
             self.cur_state.enter(self, event)
+        if self.is_on_brick:
+            self.x += main_state.brick.get_speed()
 
     def draw(self):
         self.cur_state.draw(self)
@@ -173,9 +202,19 @@ class Boy:
         #fill here
         draw_rectangle(*self.get_bb())
 
-
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
 
+    def land(self):
+        self.jumping = False
+        self.jumpDir = 1
+
+    def fall(self):
+        if self. jump == False:
+            self.jumping = True
+            self.jumpDir = -1
+
+    def set_is_on_brick(self, tf):
+        self.is_on_brick = tf

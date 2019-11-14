@@ -89,6 +89,15 @@ def update():
             ball.stop()
             ball.set_is_on_brick(True)
 
+    if collide(brick, boy):
+        boy.set_is_on_brick(True)
+        boy.land()
+    else:
+        boy.fall()
+        boy.set_is_on_brick(False)
+
+    if collide(grass, boy):
+        boy.land()
 
 def draw():
     clear_canvas()
