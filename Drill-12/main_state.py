@@ -18,6 +18,8 @@ boy = None
 zombie = None
 bigBall = None
 smallBall = None
+end = None
+
 
 def collide(a, b):
     # fill here
@@ -31,13 +33,14 @@ def collide(a, b):
 
     return True
 
-
-
 def get_boy():
     return boy
 
 
 def enter():
+    global end
+    end = False
+
     global boy
     boy = Boy()
     game_world.add_object(boy, 1)
@@ -88,7 +91,34 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+    global boy
+    global zombie
+    global bigBall
+    global smallBall
+    global end
 
+    if not end:
+        if collide(boy, zombie):
+            end = True
+            if (len(bigBall) + len(smallBall)) == 0:
+                game_world.remove_object(boy)
+            else:
+                game_world.remove_object(zombie)
+
+        else:
+            if len(bigBall) > 0:
+                for bb in bigBall:
+                    if collide(bb, zombie):
+                        bigBall.remove(bb)
+                        game_world.remove_object(bb)
+                        zombie.add_hp(100)
+
+            elif len(smallBall) > 0:
+                for sb in smallBall:
+                    if collide(sb, zombie):
+                        smallBall.remove(sb)
+                        game_world.remove_object(sb)
+                        zombie.add_hp(50)
 
 def draw():
     clear_canvas()
