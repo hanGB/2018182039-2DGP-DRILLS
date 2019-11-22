@@ -9,13 +9,15 @@ import game_world
 from boy import Boy
 from ground import Ground
 from zombie import Zombie
-
+from ball import BigBall
+from ball import SmallBall
 
 name = "MainState"
 
 boy = None
 zombie = None
-
+bigBall = None
+smallBall = None
 
 def collide(a, b):
     # fill here
@@ -47,8 +49,22 @@ def enter():
     ground = Ground()
     game_world.add_object(ground, 0)
 
+    global bigBall
+    bigBall = [BigBall() for i in range(5)]
+
+    for i in range(5):
+        game_world.add_object(bigBall[i], 0)
+
+    global smallBall
+    smallBall = [SmallBall() for i in range(5)]
+
+    for i in range(5):
+        game_world.add_object(smallBall[i], 0)
+
+
 def exit():
     game_world.clear()
+
 
 def pause():
     pass

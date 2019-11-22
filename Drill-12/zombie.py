@@ -64,6 +64,11 @@ class Zombie:
 
         return BehaviorTree.SUCCESS
 
+    def find_big_ball(self):
+        balls = main_state.bigBall
+        for i in range(len(balls)):
+            x, y = balls[i].get_xy
+
     def find_player(self):
         boy = main_state.get_boy()
         distance = (boy.x - self.x) ** 2 + (boy.y - self.y) ** 2
