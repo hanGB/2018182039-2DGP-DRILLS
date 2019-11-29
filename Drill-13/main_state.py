@@ -6,8 +6,11 @@ import os
 from pico2d import *
 import game_framework
 import game_world
+from zombie import Zombie
 
 import world_build_state
+
+import ranking_state
 
 name = "MainState"
 
@@ -59,6 +62,20 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
+
+    for game_object in game_world.all_objects():
+        if isinstance(game_object, Zombie):
+            if collide(game_object, boy):
+                with open('ranking.json', 'r') as f:
+                    time = json.load(f)
+
+                time.append(boy.get_time())
+                time.sort(reverse=True)
+
+                with open('ranking.json', 'w') as f:
+                    json.dump(time, f)
+
+                game_framework.change_state(ranking_state)
 
 
 def draw():
