@@ -39,6 +39,8 @@ class FixedBackground:
     def handle_event(self, event):
         pass
 
+    def get_window_left_bottom(self):
+        return self.window_left, self.window_bottom
 
 class InfiniteBackground:
 

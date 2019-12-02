@@ -5,8 +5,9 @@ import os
 from pico2d import *
 import game_framework
 import game_world
-# from background import FixedBackground as Background
-from background import InfiniteBackground as Background
+from ball import Ball
+from background import FixedBackground as Background
+# from background import InfiniteBackground as Background
 
 from boy import Boy
 # fill here
@@ -15,7 +16,7 @@ name = "MainState"
 
 boy = None
 background = None
-
+balls = None
 
 def collide(a, b):
     # fill here
@@ -43,6 +44,12 @@ def enter():
     global background
     background = Background()
     game_world.add_object(background, 0)
+
+    global balls
+    balls = [Ball() for b in range(100)]
+
+    for ball in balls:
+        game_world.add_object(ball, 1)
 
     # fill here
     background.set_center_object(boy)
