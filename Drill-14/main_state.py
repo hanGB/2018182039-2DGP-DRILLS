@@ -82,6 +82,11 @@ def update():
     for game_object in game_world.all_objects():
         game_object.update()
 
+    for ball in balls:
+        if collide(ball, boy):
+            game_world.remove_object(ball)
+            balls.remove(ball)
+
 
 def draw():
     clear_canvas()
