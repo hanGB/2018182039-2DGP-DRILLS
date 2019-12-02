@@ -120,17 +120,20 @@ class Boy:
         self.canvas_height = get_canvas_height()
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('animation_sheet.png')
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('ENCR10B.TTF', 20)
         self.dir = 1
         self.x_velocity, self.y_velocity = 0, 0
         self.frame = 0
         self.event_que = []
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
+        self.ball_counter = 0
 
     def get_bb(self):
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
+    def up_ball_counter(self):
+        self.ball_counter += 1
 
     def set_background(self, bg):
         self.bg = bg
@@ -150,7 +153,7 @@ class Boy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.canvas_width//2 - 60, self.canvas_height//2 + 50, '(%5d, %5d)' % (self.x, self.y), (255, 255, 0))
+        self.font.draw(self.canvas_width//2 - 60, self.canvas_height//2 + 50, ' balls: %d' % self.ball_counter, (255, 255, 0))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
